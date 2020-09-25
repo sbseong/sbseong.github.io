@@ -1,0 +1,68 @@
+.markdown-body {
+  // 400
+  font-weight: $font-weight-normal;
+
+  a {
+    color: $theme-link;
+
+    &:hover {
+      color: $theme-link-hover;
+    }
+
+    code,
+    tt {
+      color: $theme-link;
+    }
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: $head-font;
+  }
+
+  table {
+    // 14px
+    font-size: $body-font-size;
+  }
+
+  // ruby highlight fixed
+  figure {
+    margin: 0;
+  }
+
+  // improved
+  code,
+  tt {
+    font-size: $font-size-small;
+    border: $border;
+    color: $theme-red;
+    background-color: darken($theme-white, 2%);
+  }
+
+  pre {
+    > code {
+      color: $theme-black;
+    }
+  }
+
+  .highlight pre,
+  pre {
+    font-size: $font-size-small;
+    border: $border;
+  }
+
+  .highlight pre {
+    background-color: transparent;
+  }
+
+  // search
+  .search-results {
+    li {
+      list-style: none;
+    }
+  }
+}
