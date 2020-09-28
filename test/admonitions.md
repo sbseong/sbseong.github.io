@@ -18,6 +18,8 @@ In machine learning, one of the most popular deep learning methods is the convol
 ```
 
 ```note
+
+## Automated diagnosis of ear disease using ensemble deep learning with a big otoendoscopy image database
 Background
 Ear and mastoid disease can easily be treated by early detection and appropriate medical care. However, short of specialists and relatively low diagnostic accuracy calls for a new way of diagnostic strategy, in which deep learning may play a significant role. The current study presents a machine learning model to automatically diagnose ear disease using a large database of otoendoscopic images acquired in the clinical environment.
 
