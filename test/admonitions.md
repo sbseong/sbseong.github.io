@@ -16,7 +16,7 @@ In machine learning, one of the most popular deep learning methods is the convol
 
 `inline code`
 
-[`inline code inside link`]https://www.frontiersin.org/articles/10.3389/fninf.2018.00042/full[./]
+[`inline code inside link`](https://www.frontiersin.org/articles/10.3389/fninf.2018.00042/full)
 ```
 
 ```note
