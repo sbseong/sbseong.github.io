@@ -1,7 +1,3 @@
----
-sort : 5
----
-
 ## Classification
 
 ### Decision tree
@@ -439,3 +435,348 @@ RF와 다르게 n_esimators를 너무 크게하면 overfitting 문제가 있을 
 ```
 
 ```
+
+### Kernel SVM
+
+SVM에 대해서는 많이 들어보셨을 것이고, 또 많이 사용해보셨죠?
+이번에 다룰 것은 kernel SVM입니다. 사실 SVM을 써보셨으면, kernel SVM을 써보셨을거에요... param. 중에 linear를 사용하지 않으셨다면요!
+
+선형 모델과 비선형 모델의 특성
+
+
+```
+from sklearn.datasets import make_blobs
+X, y = make_blobs(centers=4, random_state=8)
+y = y %2
+```
+
+
+```
+mglearn.discrete_scatter(X[:,0], X[:,1], y)
+plt.xlabel("Feature 1")
+plt.ylabel("Feature 2")
+```
+
+
+
+
+    Text(0, 0.5, 'Feature 2')
+
+
+
+
+![png](introduction_to_machine_learning_with_python_classification_files/introduction_to_machine_learning_with_python_classification_56_1.png)
+
+
+위 그림에서와 같이 선형적인 특징으로 구분할 수 없는 경우에 사용하게 됩니다. 
+
+
+```
+from sklearn.svm import LinearSVC
+linear_svm = LinearSVC().fit(X, y)
+
+mglearn.plots.plot_2d_separator(linear_svm, X)
+mglearn.discrete_scatter(X[:, 0], X[:, 1], y)
+plt.xlabel("Feature 1")
+plt.ylabel("Feature 2")
+```
+
+
+
+
+    Text(0, 0.5, 'Feature 2')
+
+
+
+
+![png](introduction_to_machine_learning_with_python_classification_files/introduction_to_machine_learning_with_python_classification_58_1.png)
+
+
+이 두 특성을 이용해서 제 3의 특성을 만들어보겠습니다. 
+
+
+```
+X_new = np.hstack([X, X[:, 1:]**2])
+
+from mpl_toolkits.mplot3d import Axes3D, axes3d
+figure = plt.figure()
+
+ax = Axes3D(figure, elev=-152, azim=-26)
+mask = y == 0
+ax.scatter(X_new[mask, 0], X_new[mask, 1], X_new[mask, 2], c='b',
+           cmap=mglearn.cm2, s=60, edgecolor='k')
+ax.scatter(X_new[~mask, 0], X_new[~mask, 1], X_new[~mask, 2], c='r', marker='^',
+           cmap=mglearn.cm2, s=60, edgecolor='k')
+ax.set_xlabel("Feature 1")
+ax.set_ylabel("Feature 2")
+ax.set_zlabel("Feature 1 ** 2")
+```
+
+
+
+
+    Text(0.5, 0, 'Feature 1 ** 2')
+
+
+
+
+![png](introduction_to_machine_learning_with_python_classification_files/introduction_to_machine_learning_with_python_classification_60_1.png)
+
+
+이렇게 생긴 데이터셋에서는 선형 모델과 3차원 공간의 평면을 사용해 두 클래스를 구분할 수 있습니다. 
+
+
+```
+linear_svm_3d = LinearSVC().fit(X_new, y)
+coef, intercept = linear_svm_3d.coef_.ravel(), linear_svm_3d.intercept_
+
+figure = plt.figure()
+ax = Axes3D(figure, elev=-152, azim=-26)
+xx = np.linspace(X_new[:,0].min() - 2, X_new[:,0].max() +2, 50)
+yy = np.linspace(X_new[:,1].min() - 2, X_new[:,1].max() +2, 50)
+
+XX, YY = np.meshgrid(xx, yy)
+ZZ = (coef[0] * XX + coef[1] * YY + intercept) / -coef[2]
+ax.plot_surface(XX, YY, ZZ, rstride=8, cstride=8, alpha=0.3)
+ax.scatter(X_new[mask, 0], X_new[mask, 1], X_new[mask, 2], c='b',
+           cmap=mglearn.cm2, s=60, edgecolor='k')
+ax.scatter(X_new[~mask, 0], X_new[~mask, 1], X_new[~mask, 2], c='r', marker='^',
+           cmap=mglearn.cm2, s=60, edgecolor='k')
+ax.set_xlabel("Feature 1")
+ax.set_ylabel("Feature 2")
+ax.set_zlabel("Feature 1 ** 2")
+```
+
+
+
+
+    Text(0.5, 0, 'Feature 1 ** 2')
+
+
+
+
+![png](introduction_to_machine_learning_with_python_classification_files/introduction_to_machine_learning_with_python_classification_62_1.png)
+
+
+원래 특성으로 투영해보면 이 선형 SVM은 더 이상 선형이 아니죠. 직선보다 타월에 가까움 모습을 확인할 수 있습니다. 
+
+
+```
+ZZ = YY **2
+dec = linear_svm_3d.decision_function(np.c_[XX.ravel(), YY.ravel(), ZZ.ravel()])
+plt.contourf(XX, YY, dec.reshape(XX.shape), levels=[dec.min(), 0, dec.max()], 
+             cmap=mglearn.cm2, alpha=0.5)
+mglearn.discrete_scatter(X[:, 0], X[:, 1], y)
+plt.xlabel("Feature 1")
+plt.ylabel("Feature 2")
+```
+
+
+
+
+    Text(0, 0.5, 'Feature 2')
+
+
+
+
+![png](introduction_to_machine_learning_with_python_classification_files/introduction_to_machine_learning_with_python_classification_64_1.png)
+
+
+Kernel Trick
+
+앞서 데이터 셋의 변화를 주면서, 선형 모델을 강력하게 만들었습니다. 하지만 많은 경우 어떻게 확장을 해야할 지 모르고, 연산비용 역시 커집니다. 다행히 수학적 기교인 kernel trick을 이용하여 실제 데이터를 확장하지 않고 확장된 특성에 대한 데이터 포인트들의 거리를 계산합니다. 
+
+서포트 벡터 머신에서 데이터를 고차원 공간에 매핑하는데 많이 사용하는 방법은 2가지 입니다. RBF(Gaussian) 커널과 다항식(polynomial) 커널이 있습니다. 
+
+SVM 이해하기 \n
+학습이 진행되는 동안 SVM은 각 훈련 데이터 포인트가 두 클래스 사이의 결정 경계를 구분하는데 얼마나 중요한지를 배우게 됩니다. 바로 두 클래스 사이의 경계에 위치한 데이터 포인트들을 서포트 벡터라고 칭하며, 이들에 의해서 학습이 되는데요, 여기서 SVM의 이름이 유래됩니다. 
+
+새로운 데이터 포인트에 대해 예측하려면 각 서포트 벡터와의 거리를 측정합니다. 분류 결정은 서포트 벡터까지의 거리에 기반하며, 각 벡터의 중요도는 SVC.dual_coef_ 속성에 저장됩니다. 
+
+K_rbf = exp(-gamma|x1 - x2|^2)
+
+
+```
+from sklearn.svm import SVC
+X, y = mglearn.tools.make_handcrafted_dataset()
+svm = SVC(kernel = 'rbf', C=10, gamma=0.1).fit(X,y)
+
+mglearn.plots.plot_2d_separator(svm, X, eps=.5)
+mglearn.discrete_scatter(X[:,0], X[:,1], y)
+
+sv = svm.support_vectors_
+sv_labels = svm.dual_coef_.ravel() >0
+mglearn.discrete_scatter(sv[:,0], sv[:,1], sv_labels, s=15, markeredgewidth=3)
+plt.xlabel("Feature 1")
+plt.ylabel("Feature 2")
+```
+
+
+
+
+    Text(0, 0.5, 'Feature 2')
+
+
+
+
+![png](introduction_to_machine_learning_with_python_classification_files/introduction_to_machine_learning_with_python_classification_67_1.png)
+
+
+매개변수 튜닝
+
+gamma 매개변수는 카우시안 커널 폭의 역수에 해당합니다. 훈련샘플이 미치는 범위를 가우시안으로 생각하고 결정한다고 생각하면 되고, 작은 값이 넓은 영역을, 큰 값이면 영향을 미치는 영역이 좁아집니다. 
+
+C 매개변수는 선형 모델에서 사용한 것과 비슷한 규제 매개변수입니다. 각 포인트의 중요도(dual_coef_) 값을 제한합니다. 
+
+
+```
+fig, axes = plt.subplots(3, 3, figsize=(15, 10))
+
+for ax, C in zip(axes, range(-1, 2)):
+  for a, gamma in zip(ax, range(-1, 2)):
+    mglearn.plots.plot_svm(log_C=C, log_gamma=gamma, ax=a)
+
+axes[0, 0].legend(["클래스 0", "클래스 1", "클래스 0 서포트벡터", "클래스 1 서포트벡터"], 
+                   ncol=4, loc = (.9, 1.2))
+```
+
+
+
+
+    <matplotlib.legend.Legend at 0x7f6a25cb5e10>
+
+
+
+
+![png](introduction_to_machine_learning_with_python_classification_files/introduction_to_machine_learning_with_python_classification_69_1.png)
+
+
+왼쪽에서 오른쪽으로 가면서 gamma가 커집니다. 가우시안의 범위가 좁아지는 것을 의미하죠. 반경이 점점 줄어드는 것을 볼 수 있습니다. 
+결정 경계가 한 포인트에 더욱 민감해집니다. 왼쪽으로 갈 수록 경계가 부드러워지죠.
+
+한편 C는 아래로갈수록 커집니다. 제약이 매우커지게 되는 것이므로, 위쪽은 잘못 분류된 데이터 포인트가 경계에 거의 영향을 주지 않습니다. 반면 아래쪽은 결정 경계를 매우 강하게 휘게 합니다. 
+
+유방암 데이터셋에 적용
+
+
+```
+X_train, X_test, y_train, y_test = train_test_split(cancer.data, cancer.target, stratify=cancer.target, random_state=0)
+
+svc = SVC()
+svc.fit(X_train, y_train)
+print("훈련 세트 점수: {:.3f}".format(svc.score(X_train, y_train)))
+print("테스트 세트 점수: {:.3f}".format(svc.score(X_test, y_test)))
+
+```
+
+    훈련 세트 점수: 0.923
+    테스트 세트 점수: 0.916
+
+
+
+```
+plt.boxplot(X_train, manage_ticks=False)
+plt.yscale("symlog")
+plt.xlabel("Feature index")
+plt.ylabel("Feature size")
+```
+
+
+
+
+    Text(0, 0.5, 'Feature size')
+
+
+
+
+![png](introduction_to_machine_learning_with_python_classification_files/introduction_to_machine_learning_with_python_classification_73_1.png)
+
+
+그래프를 보니 유방암 데이터셋의 특성은 자릿수 자체가 완전히 다릅니다. 이것이 일부 모델(선형 모델 등)에서도 어느정도 문제가 될 수 있지만, 커널 SVM에서는 영향이 아주 큽니다. 이 문제를 해결하는 방법을 알아봅시다. 
+
+SVM을 위한 데이터 전처리
+
+데이터의 특징을 [0, 1]로 줄이는 방법입니다. 
+minmaxScaler를 보통 많이 사용합니다. 
+
+
+```
+X_train[0:2][0:2]
+```
+
+
+
+
+    array([[1.231e+01, 1.652e+01, 7.919e+01, 4.709e+02, 9.172e-02, 6.829e-02,
+            3.372e-02, 2.272e-02, 1.720e-01, 5.914e-02, 2.505e-01, 1.025e+00,
+            1.740e+00, 1.968e+01, 4.854e-03, 1.819e-02, 1.826e-02, 7.965e-03,
+            1.386e-02, 2.304e-03, 1.411e+01, 2.321e+01, 8.971e+01, 6.111e+02,
+            1.176e-01, 1.843e-01, 1.703e-01, 8.660e-02, 2.618e-01, 7.609e-02],
+           [1.754e+01, 1.932e+01, 1.151e+02, 9.516e+02, 8.968e-02, 1.198e-01,
+            1.036e-01, 7.488e-02, 1.506e-01, 5.491e-02, 3.971e-01, 8.282e-01,
+            3.088e+00, 4.073e+01, 6.090e-03, 2.569e-02, 2.713e-02, 1.345e-02,
+            1.594e-02, 2.658e-03, 2.042e+01, 2.584e+01, 1.395e+02, 1.239e+03,
+            1.381e-01, 3.420e-01, 3.508e-01, 1.939e-01, 2.928e-01, 7.867e-02]])
+
+
+
+
+```
+min_on_training = X_train.min(axis=0)
+range_on_training = X_train.max(axis=0) - min_on_training
+
+X_train_scaled = (X_train - min_on_training) / range_on_training
+
+print("Feature min value \n{}".format(X_train_scaled.min(axis=0)))
+print("Feature max value \n{}".format(X_train_scaled.max(axis=0)))
+```
+
+    Feature min value 
+    [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
+     0. 0. 0. 0. 0. 0.]
+    Feature max value 
+    [1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1.
+     1. 1. 1. 1. 1. 1.]
+
+
+
+```
+svc_sc = SVC()
+svc_sc.fit(X_train_scaled, y_train)
+X_test_scaled = (X_test - min_on_training) / range_on_training
+
+print("훈련 세트 점수: {:.3f}".format(svc_sc.score(X_train, y_train)))
+print("테스트 세트 점수: {:.3f}".format(svc_sc.score(X_test, y_test)))
+```
+
+    훈련 세트 점수: 0.373
+    테스트 세트 점수: 0.371
+
+
+이건 왜 학습이 제대로 안 이뤄질까...
+
+
+```
+svc = SVC(C=1000, gamma=0.01)
+svc.fit(X_train_scaled, y_train)
+X_test_scaled = (X_test - min_on_training) / range_on_training
+
+print("훈련 세트 점수: {:.3f}".format(svc.score(X_train, y_train)))
+print("테스트 세트 점수: {:.3f}".format(svc.score(X_test, y_test)))
+```
+
+    훈련 세트 점수: 0.627
+    테스트 세트 점수: 0.629
+
+
+장단점과 매개변수
+
+커널 SVM은 강력한 모델이며 다양한 데이터셋에서 잘 작동합니다.  SVM은 데이터의 특성이 몇 개 안되더라도 복잡한 결정 경계를 만들 수 있습니다. 차원의 수에는 상관이 없지만, 데이터 샘플 수가 많을 때에는 잘 맞지 않습니다. 
+
+1만개의 샘플까지는 잘 되더라도, 10만개의 샘플이 되면 메모리 관점에서 도전적인 과제가 됩니다. 
+
+한편, svm의 단점은 데이터 전처리와, 매개변수 설정에 신경을 많이 써야 한다는 점입니다. 분석도 어렵습니다. 하지만 모든 특성값들이 비슷한 단위이고, 스케일이 비슷하다면 시도해볼 가치는 있습니다. 
+
+규제 매개변수 C가 중요하고, 어떤 커널을 사용할 지와 각 커널에 따른 매개변수가 있습니다. scikit-learn에서는 RBF의 경우 gamma 하나만 갖습니다. 두 변수가 복잡도를 조정하며, 둘 다 큰 값이 더 복잡한 모델을 만들게 됩니다. 
+
+
