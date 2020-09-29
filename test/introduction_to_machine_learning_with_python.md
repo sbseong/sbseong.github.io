@@ -1,4 +1,9 @@
-## Linear regression
+---
+sort: 4
+---
+
+## Regression study
+### Linear regression
 
 
 ```
@@ -99,7 +104,7 @@ print("테스트 세트 점수: {:.2f}".format(lr.score(X_test, y_test)))
 
 이렇게 샘플 506개, 특성값이 104개를 쓰게되면, 과대적합문제가 발생하죠. 훈련과 테스트 세트의 점수를 보면 이를 유추할 수 있습니다.
 
-## Ridge regression
+### Ridge regression
 
 
 릿지(Ridge) 회귀도 선형모델을 사용하므로 최소적합법(least square)에서 사용한 것과 같은 예측함수를 사용합니다. 하지만, 릿지(Ridge) 회귀에는 제약조건을 둘 수가 있습니다. W의 크기를 제약으로 두는 regularization 을 하는 것입니다.  릿지(Ridge) 회귀에서는 L2 regularization을 사용합니다.
@@ -184,7 +189,7 @@ mglearn.plots.plot_ridge_n_samples()
 ![png](introduction_to_machine_learning_with_python_files/introduction_to_machine_learning_with_python_21_0.png)
 
 
-## Lasso
+### Lasso
 
 선형회귀에 규제를 적용하는데 Ridge의 대한으로 Lasso가 있습니다. 규제의 방식에서 차이가 있는데, L1 regularization(규제)를 사용합니다. 이 규제의 특징은 규제의 결과로 특정 계수는 0으로 만들게 됩니다. 이 말은 해당 특성은 완전히 제외하고 보겠다는 의미이죠. 특성의 선택까지 자동으로 이뤄진다고 보면 되겠습니다. 
 
