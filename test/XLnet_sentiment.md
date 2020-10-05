@@ -2,7 +2,7 @@
 sort: 3
 ---
 
-## XLnet for NLP example
+## XLnet for NLP Study
 
 ## Section 1. 개발 테스트 환경 구축
   구글 드라이브의 데이터와 모델을 불러올 수 있도록 연동하는 과정
