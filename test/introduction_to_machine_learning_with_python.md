@@ -2,7 +2,7 @@
 sort: 4
 ---
 
-## Regression study
+## Regression Study
 ### Linear regression
 
 
