@@ -1,7 +1,7 @@
 ---
 sort : 5
 ---
-## Classification
+## Classification Study
 
 ### Decision tree
 
