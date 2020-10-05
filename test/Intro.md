@@ -12,7 +12,6 @@ sort: 1
 
 한편 그간 공부했던 내용들도 조금씩 정리해볼 예정입니다.
 
-연습
 [기존 네이버 블로그 Links](https://blog.naver.com/tlqordl89)
 
 
