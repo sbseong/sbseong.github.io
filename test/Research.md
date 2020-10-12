@@ -32,7 +32,7 @@ The current study is unprecedented in terms of both disease diversity and diagno
 ```
 
 ```tip
-스타트업 프로젝트 
+## 스타트업 프로젝트 
 
 [린스타트업 _ 에시모리아]실천이 이론을 이긴다
 Done is better than perfact!
