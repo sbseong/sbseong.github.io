@@ -85,7 +85,7 @@ history = model.fit(X, Y, epochs=30, batch_size=30)
 
 ## Fashion MNIST를 불러와서 더 많은 라이브러리의 도구들을 활용해보겠습니다.
 
-## Overview
+## Deep Learning Training Tricks
 
 Neural Networks는 매개변수가 아주 많은 모델이어서, Section 2에서 공부했던 것처럼 훈련 데이터에 쉽게 과대적합(overfit) 오버핏될 수 있다. 이 문제를 해결하는 가장 중요한 방법은 정규화 전략이다.
 
