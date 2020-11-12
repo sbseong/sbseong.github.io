@@ -1,3 +1,7 @@
+---
+sort: 6
+--- 
+ 
  Tensorflow, Keras를 이용하여 딥러닝에 필요한 스킬들을 기본적인 샘플을 만들어 보았다.
 
 # Neural Network Frameworks - Tensorflow 2.0
