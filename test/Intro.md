@@ -58,14 +58,17 @@ gCNN의 구동테스트를 위해서는 가장 쉽고 정확한 데이터로 확
 여기서 데이터를 이용한 마케팅에 대해서 공부하게 되었고, 이메일 마케팅을 이용하여 3인이 월 매출을 5000만원까지 올려보는 데 성공하였습니다. 
 새로운 PO를 뽑고, 저는 다시 원래의 Job으로 돌아오고자 노력하고 있습니다. 
 
+**Codestates** Data science 강의
+
+
 ---
 
 Task list:
 
 - [x] Create a sample markdown document
 - [x] Add task lists to it
-- [ ] Looking for a new job
-- [ ] move naver.blog to here
+- [x] Looking for a new job
+- [x] move naver.blog to here
 
 Definition lists can be used with HTML syntax. Definition terms are bold and italic.
 
